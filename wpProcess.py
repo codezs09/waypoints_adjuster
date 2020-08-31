@@ -31,8 +31,8 @@ class WaypointProcessor():
 		del self.th[:]
 		del self.station[:]
 		with open(fname,'r') as wfile:
-		    reader = csv.DictReader(wfile, CSV_HEADER)
-		    for i, wp in enumerate(reader):
+			reader = csv.DictReader(wfile, CSV_HEADER)
+			for i, wp in enumerate(reader):
 				self.x.append(float(wp['x']))
 				self.y.append( float(wp['y']) )
 				self.z.append( float(wp['z']) )
@@ -42,7 +42,7 @@ class WaypointProcessor():
 				else:
 					self.station.append( self.station[-1]+ 
 						math.sqrt( (self.x[-1]-self.x[-2])**2+
-						           (self.y[-1]-self.y[-2])**2 ) )
+								   (self.y[-1]-self.y[-2])**2 ) )
 
 	def scatter_waypoints(self,ds=1):	# ds- gap of station 
 		s_ = [0.0]
@@ -70,8 +70,8 @@ class WaypointProcessor():
 	def storecsv_waypoints(self,new_fname):
 		state_zipped = zip(self.x, self.y, self.z, self.th)
 		with open(new_fname,mode ='wb') as wfile:
-		     writer = csv.writer(wfile)
-		     writer.writerows(state_zipped)
+			writer = csv.writer(wfile)
+			writer.writerows(state_zipped)
 		wfile.close()
 
 	def getThFromxy(self):
