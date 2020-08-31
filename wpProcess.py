@@ -137,53 +137,43 @@ class WaypointProcessor():
 		idx_org = 0
 		station_.append(self.station[0])
 		curvature_.append(self.curvature[0])
-		while station_[-1] < self.station[-1]:
-			# obtain s, s.t. curvature vlaue is within limits
-			ds = min( 16.0, self.station[-1]-station_[-1] )
-			flg_runonce = False
-			while not flg_runonce or ds>=1.0:
-				flg_runonce = True
-				s = station_[-1]+ds
-				flg_excd = False	# flag indicator whether it exceeds curvature limit
-				coef = 0.1
+		fx = interp1d(self.station, self.x)
+		fy = interp1d(self.station, self.y)
+		fcurv = interp1d(self.station, self.curvature)
 
-				# check the curvature in the range [station_[-1], station_[-1]+ds] exceeding limit
-				i = idx_org
-				while i<len(self.station) and self.station[i]<=s:					
-					if ds > 1.0 and abs(self.curvature[i]) > max(0.01, coef/ds):
-						flg_excd = True
-						break
-					i += 1
+		ds = 16.0
+		for i in range(len(self.x) ):
+			if ds < self.station[i] - station_[-1] or i == (len(self.x) - 1):
+				if i == (len(self.x) - 1):
+					ds = self.station[-1] - station_[-1]
+				s = station_[-1] + ds
+				print(ds)
 
-				if flg_excd:
-					ds /= 2
-				else:
-					break
-			print ds
-			idx_org = i
-			# interp for new x, y, curvature at s
-			fx = interp1d(self.station, self.x)
-			fy = interp1d(self.station, self.y)
-			fcurv = interp1d(self.station, self.curvature)
-			x_.append( float( fx(s) ) )
-			y_.append( float(fy(s)) )
-			station_.append(s)
-			curvature_.append( float(fcurv(s)) )
+				# interp for new x, y, curvature at s				
+				x_.append( float( fx(s) ) )
+				y_.append( float(fy(s)) )
+				station_.append(s)
+				curvature_.append( float(fcurv(s)) )
+				# reset 
+				ds = 16
 
-		# update the class members x, y, th, station, curvature
-		# plt.plot(self.x, self.y, 'b.')
-		# plt.plot(x_, y_, 'r.')
-		# plt.xlabel('x [m]')
-		# plt.ylabel('y [m]')
-		# plt.legend(['original','adjusted'], loc='best')
-		# plt.show()
+			ds = min(ds,  0.1/abs(self.curvature[i]) )			
+			ds = max(ds, 1.0)	# saturation of ds
 
-		# plt.plot(self.station, self.curvature, 'b.')		
-		# plt.plot(station_, curvature_, 'r.')
-		# plt.xlabel('station [m]')
-		# plt.ylabel('curvature [m]')
-		# plt.legend(['original','adjusted'], loc='best')
-		# plt.show()
+		#update the class members x, y, th, station, curvature
+		plt.plot(self.x, self.y, 'b.')
+		plt.plot(x_, y_, 'r.')
+		plt.xlabel('x [m]')
+		plt.ylabel('y [m]')
+		plt.legend(['original','adjusted'], loc='best')
+		plt.show()
+
+		plt.plot(self.station, self.curvature, 'b.')		
+		plt.plot(station_, curvature_, 'r.')
+		plt.xlabel('station [m]')
+		plt.ylabel('curvature [m]')
+		plt.legend(['original','adjusted'], loc='best')
+		plt.show()
 
 		self.x = x_
 		self.y = y_	
