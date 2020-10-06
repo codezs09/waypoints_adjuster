@@ -43,6 +43,8 @@ A python script `wpProcess.py` is written to preprocess the data. The waypoints 
 | 0.01      | 100        | 10       |
 | <1/160    | >160       | 16       |
 
+Updated: The length decision is updated with a greedy algorithm. 
+
 ​		The result after applying this redistribution algorithm is shown below with the example. It can be seen that this distribution is more reasonable by putting more waypoints at large curvature to describe the path. 
 
 | redistributed waypoints       | curvature after redistribution  |
